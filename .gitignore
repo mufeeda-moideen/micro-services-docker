@@ -6,5 +6,4 @@ user-service/.env
 
 dist/
 *.log
-Dockerfile*
 docker-compose.override.yml
