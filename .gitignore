@@ -1,0 +1,10 @@
+auth-service/node_modules/
+auth-service/.env
+
+user-service/node_modules/
+user-service/.env
+
+dist/
+*.log
+Dockerfile*
+docker-compose.override.yml

@@ -1,0 +1,40 @@
+
+version: "3.7"
+
+services:
+  postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=prisma
+      - POSTGRES_PASSWORD=prisma
+    ports:
+      - "5432:5432"
+    networks:
+      - prisma-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://prisma:prisma@postgres:5432/postgres
+    depends_on:
+      - postgres
+    networks:
+      - prisma-network
+    restart: unless-stopped
+
+networks:
+  prisma-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
