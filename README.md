@@ -1,4 +1,4 @@
-cd auth-serive
+cd auth-service
 
 
 docker compose up --build
