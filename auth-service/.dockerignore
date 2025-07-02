@@ -1,0 +1,19 @@
+# Node dependencies
+node_modules
+npm-debug.log
+
+# Build output
+dist
+build
+
+# Prisma
+.prisma
+coverage
+
+# IDE/editor files
+.vscode
+*.swp
+
+# OS-specific
+.DS_Store
+Thumbs.db

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 
-// Custom error classes
+// Base application error
 export class AppError extends Error {
     statusCode: number;
     isOperational: boolean;
@@ -13,6 +13,7 @@ export class AppError extends Error {
     }
 }
 
+// Validation error with detailed messages
 export class ValidationError extends AppError {
     details: any[];
 
@@ -22,25 +23,28 @@ export class ValidationError extends AppError {
     }
 }
 
+// Thrown when authentication fails (e.g. invalid token)
 export class AuthenticationError extends AppError {
     constructor(message = "Authentication failed") {
         super(message, 401);
     }
 }
 
+// Thrown when user is not authorized
 export class AuthorizationError extends AppError {
     constructor(message = "Not authorized") {
         super(message, 403);
     }
 }
 
+// Thrown when a resource is not found
 export class NotFoundError extends AppError {
     constructor(resource = "Resource") {
         super(`${resource} not found`, 404);
     }
 }
 
-// Error response formatter
+// Formats and sends error response
 const errorResponse = (error: any, res: Response) => {
     if (process.env.NODE_ENV === "development") {
         console.error(error);
@@ -65,7 +69,7 @@ const errorResponse = (error: any, res: Response) => {
     res.status(error.statusCode || 500).json(response);
 };
 
-// Main error handling middleware
+// Global error handler middleware
 export const errorHandler = (
     error: any,
     req: Request,
@@ -75,12 +79,12 @@ export const errorHandler = (
     errorResponse(error, res);
 };
 
-// 404 handler
+// Handles undefined routes (404)
 export const notFoundHandler = (req: Request, res: Response) => {
     errorResponse(new NotFoundError("Endpoint"), res);
 };
 
-// Async handler wrapper to catch async errors
+// Catches async errors in route handlers
 export const asyncHandler = (fn: Function) =>
     (req: Request, res: Response, next: NextFunction) =>
         Promise.resolve(fn(req, res, next)).catch(next);

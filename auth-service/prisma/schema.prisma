@@ -1,6 +1,7 @@
 generator client {
   provider = "prisma-client-js"
-  binaryTargets = ["native", "debian-openssl-3.0.x"]                    
+  // Ensures compatibility with both local and Debian systems using OpenSSL 3.0
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -8,20 +9,44 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/// User model: stores registered user details
 model User {
-  id                         String   @id @default(uuid())
-  name                       String
-  email                      String   @unique
-  password                   String
-  phone                      String?
-  emailVerified              Boolean  @default(false)
-  phoneVerified              Boolean  @default(false)
-  verificationToken          String?
-  verificationTokenExpiresAt DateTime?
-  createdAt                  DateTime @default(now())
-  updatedAt                  DateTime @updatedAt
-  profilePic                 String?
-  dob                        DateTime?
-  gender                     String?
-  preferredLanguage          String?
+  id                           String    @id @default(uuid())
+  email                        String    @unique
+  password                     String
+  name                         String
+  phone                        String?
+
+  emailVerified                Boolean   @default(false)
+  phoneVerified                Boolean   @default(false)
+  verifiedAt                   DateTime?
+
+  createdAt                    DateTime  @default(now())
+  updatedAt                    DateTime  @updatedAt
+
+  // Token for email/phone verification and its expiry
+  verificationToken            String?
+  verificationTokenExpiresAt   DateTime?
+
+  // OTP for password reset and its expiry
+  resetPasswordOtp             String?
+  resetPasswordOtpExpiresAt    DateTime?
+
+  // Optional profile information
+  profilePic                   String?
+  dob                          DateTime?
+  gender                       String?
+  address                      Json?           // Stored as JSON for flexibility
+  preferredLanguage            String?
+}
+
+/// Tracks verification or password reset attempts
+model VerificationAttempt {
+  id         String   @id @default(uuid())
+  email      String
+  type       String   // 'EMAIL_VERIFICATION' or 'PASSWORD_RESET'
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime @default(now()) // Useful for auto-deletion or expiry checks
+
+  @@index([email, type]) // Optimizes lookups by email and attempt type
 }

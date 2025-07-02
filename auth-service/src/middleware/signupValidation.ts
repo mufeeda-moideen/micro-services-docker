@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { Request, Response, NextFunction } from "express";
-
+import { ValidationError } from "../utils/errorHandler";
 
 const signupSchema = z
     .object({
@@ -28,6 +28,7 @@ export const signupValidation = (
             path: err.path.join("."),
             message: err.message,
         }));
+        throw new ValidationError(formattedErrors);
     }
     next();
 };
